@@ -1,0 +1,301 @@
+<main class="container">
+  <header>
+    <h1>Generador de reportes biométricos</h1>
+    <p class="subtitle">Configura la persona, horario, asistencias y genera reportes falsos en PDF o Word.</p>
+  </header>
+
+  <div class="toolbar">
+    <button type="button" (click)="exportar()">Exportar JSON</button>
+    <label class="file-button">
+      Importar JSON
+      <input type="file" accept="application/json" (change)="importar($event)" hidden />
+    </label>
+  </div>
+
+  @if (mensaje()) {
+    <div class="alert">{{ mensaje() }}</div>
+  }
+
+  <section>
+    <h2>Persona</h2>
+    <form [formGroup]="personaForm" class="grid-2">
+      <label>
+        Nombre
+        <input type="text" formControlName="nombre" />
+      </label>
+      <label>
+        Identificación
+        <input type="text" formControlName="identificacion" />
+      </label>
+    </form>
+  </section>
+
+  <section>
+    <h2>Período del reporte</h2>
+    <form [formGroup]="rangoForm" class="grid-2">
+      <label>
+        Desde
+        <input type="date" formControlName="fechaDesde" />
+      </label>
+      <label>
+        Hasta
+        <input type="date" formControlName="fechaHasta" />
+      </label>
+    </form>
+  </section>
+
+  <section>
+    <h2>Horario semanal</h2>
+    <form [formGroup]="horarioForm">
+      <div class="grid-2">
+        <label>
+          Nombre del horario
+          <input type="text" formControlName="nombre" />
+        </label>
+        <label>
+          Almuerzo (minutos)
+          <input type="number" formControlName="almuerzoMinutos" />
+        </label>
+      </div>
+      <table class="horario-table">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dia of diasSemana; track dia) {
+            <tr [formGroupName]="dia">
+              <td>{{ dia | titlecase }}</td>
+              <td><input type="time" formControlName="entrada" /></td>
+              <td><input type="time" formControlName="salida" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </form>
+  </section>
+
+  <section>
+    <h2>Registros de asistencia</h2>
+    <form [formGroup]="registroForm" class="grid-4">
+      <label>
+        Fecha
+        <input type="date" formControlName="fecha" />
+      </label>
+      <label>
+        Hora
+        <input type="time" formControlName="hora" />
+      </label>
+      <label>
+        Tipo
+        <select formControlName="tipo">
+          <option value="entrada">Entrada</option>
+          <option value="salida">Salida</option>
+        </select>
+      </label>
+      <button type="button" (click)="agregarRegistro()">Agregar</button>
+    </form>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha/hora</th>
+          <th>Tipo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (reg of state().registros; track $index) {
+          <tr>
+            <td>{{ formatearRegistro(reg.fechaHora) }}</td>
+            <td>{{ reg.tipo | titlecase }}</td>
+            <td><button type="button" (click)="eliminarRegistro($index)">Eliminar</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Días excluidos</h2>
+    <form [formGroup]="excluirForm" class="grid-2">
+      <label>
+        Fecha a excluir
+        <input type="date" formControlName="fecha" />
+      </label>
+      <button type="button" (click)="excluirDia()">Excluir día</button>
+    </form>
+    <ul class="tag-list">
+      @for (dia of state().diasExcluidos; track dia) {
+        <li>
+          {{ dia }}
+          <button type="button" (click)="incluirDia(dia)">×</button>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>Feriados</h2>
+    <form [formGroup]="feriadoForm" class="grid-3">
+      <label>
+        Fecha
+        <input type="date" formControlName="fecha" />
+      </label>
+      <label>
+        Descripción
+        <input type="text" formControlName="descripcion" />
+      </label>
+      <button type="button" (click)="agregarFeriado()">Agregar feriado</button>
+    </form>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (f of feriadosLista; track f.fecha) {
+          <tr>
+            <td>{{ f.fecha }}</td>
+            <td>{{ f.descripcion }}</td>
+            <td><button type="button" (click)="eliminarFeriado($index)">Eliminar</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="actions-row">
+      <button type="button" class="primary" (click)="guardarFeriados()">Guardar feriados</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Justificaciones</h2>
+    <form [formGroup]="justificacionForm" class="grid-4">
+      <label>
+        Fecha
+        <input type="date" formControlName="fecha" />
+      </label>
+      <label>
+        Tipo
+        <select formControlName="tipo">
+          <option value="">Seleccionar</option>
+          <option value="tardanza">Tardanza</option>
+          <option value="ausencia">Ausencia</option>
+          <option value="permiso">Permiso</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="salida_anticipada">Salida anticipada</option>
+        </select>
+      </label>
+      <label>
+        Descripción
+        <input type="text" formControlName="descripcion" />
+      </label>
+      <button type="button" (click)="agregarJustificacion()">Agregar</button>
+    </form>
+    <ul class="tag-list">
+      @for (j of state().justificaciones; track $index) {
+        <li>
+          {{ j.fecha }} — {{ j.tipo }}: {{ j.descripcion }}
+          <button type="button" (click)="eliminarJustificacion($index)">×</button>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>Configuración del reporte</h2>
+    <form [formGroup]="configForm">
+      <div class="grid-2">
+        <label>
+          Título
+          <input type="text" formControlName="titulo" />
+        </label>
+        <label>
+          Subtítulo
+          <input type="text" formControlName="subtitulo" />
+        </label>
+        <label>
+          Institución
+          <input type="text" formControlName="institucion" />
+        </label>
+        <label>
+          Disclaimer
+          <input type="text" formControlName="disclaimer" />
+        </label>
+      </div>
+      <div class="grid-4">
+        <label>
+          Color header
+          <input type="color" formControlName="colorHeader" />
+        </label>
+        <label>
+          Color OK
+          <input type="color" formControlName="colorOk" />
+        </label>
+        <label>
+          Color advertencia
+          <input type="color" formControlName="colorWarn" />
+        </label>
+        <label>
+          Color error
+          <input type="color" formControlName="colorError" />
+        </label>
+      </div>
+      <div class="grid-3">
+        <label>
+          Tardanza leve desde (min)
+          <input type="number" formControlName="umbralTardanzaLeveMin" />
+        </label>
+        <label>
+          Tardanza severa desde (min)
+          <input type="number" formControlName="umbralTardanzaSeveraMin" />
+        </label>
+        <label>
+          Exceso almuerzo desde (min)
+          <input type="number" formControlName="umbralExcesoAlmuerzoMin" />
+        </label>
+      </div>
+      <fieldset class="checks">
+        <label><input type="checkbox" formControlName="incluirResumen" /> Resumen</label>
+        <label><input type="checkbox" formControlName="incluirTardanzas" /> Tardanzas</label>
+        <label><input type="checkbox" formControlName="incluirAusencias" /> Ausencias</label>
+        <label><input type="checkbox" formControlName="incluirExcesosAlmuerzo" /> Excesos de almuerzo</label>
+        <label><input type="checkbox" formControlName="incluirSalidasAnticipadas" /> Salidas anticipadas</label>
+        <label><input type="checkbox" formControlName="incluirRegistrosAnomalos" /> Registros anómalos</label>
+        <label><input type="checkbox" formControlName="incluirCumplimientoHoras" /> Cumplimiento de horas</label>
+      </fieldset>
+    </form>
+  </section>
+
+  <section>
+    <div class="preview-header">
+      <h2>Vista previa del reporte</h2>
+      <button type="button" [disabled]="cargandoPreview()" (click)="actualizarVistaPrevia()">
+        @if (cargandoPreview()) {
+          Actualizando...
+        } @else {
+          Actualizar vista previa
+        }
+      </button>
+    </div>
+
+    @if (previewResultado()) {
+      <app-reporte-preview [resultado]="previewResultado()!" />
+    } @else {
+      <p class="empty-preview">Presioná "Actualizar vista previa" para ver el análisis del reporte.</p>
+    }
+  </section>
+
+  <section class="actions">
+    <button type="button" class="primary" (click)="generar('pdf')">Generar PDF</button>
+    <button type="button" class="primary" (click)="generar('word')">Generar Word</button>
+  </section>
+</main>

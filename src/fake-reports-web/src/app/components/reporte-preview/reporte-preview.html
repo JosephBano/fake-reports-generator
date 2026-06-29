@@ -1,0 +1,94 @@
+<div class="preview">
+  <div class="preview-header">
+    <h3>{{ resultado.persona.nombre }}</h3>
+    <p class="meta">
+      {{ resultado.persona.identificacion }} ·
+      {{ formatearFecha(resultado.fechaDesde) }} – {{ formatearFecha(resultado.fechaHasta) }}
+    </p>
+  </div>
+
+  <h4>Resumen</h4>
+  <table class="resumen-table">
+    <tbody>
+      <tr>
+        <td>Total días</td>
+        <td>{{ resultado.resumen.totalDias }}</td>
+      </tr>
+      <tr>
+        <td>Ausencias</td>
+        <td>{{ resultado.resumen.ausencias }}</td>
+      </tr>
+      <tr>
+        <td>Tardanzas severas</td>
+        <td>{{ resultado.resumen.tardanzasSeveras }}</td>
+      </tr>
+      <tr>
+        <td>Tardanzas leves</td>
+        <td>{{ resultado.resumen.tardanzasLeves }}</td>
+      </tr>
+      <tr>
+        <td>Excesos de almuerzo</td>
+        <td>{{ resultado.resumen.excesosAlmuerzo }}</td>
+      </tr>
+      <tr>
+        <td>Salidas anticipadas</td>
+        <td>{{ resultado.resumen.salidasAnticipadas }}</td>
+      </tr>
+      <tr>
+        <td>Registros anómalos</td>
+        <td>{{ resultado.resumen.registrosAnomalos }}</td>
+      </tr>
+      <tr>
+        <td>Justificaciones</td>
+        <td>{{ resultado.resumen.justificaciones }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Detalle cronológico</h4>
+  <div class="detalle-scroll">
+    <table class="detalle-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Retraso</th>
+          <th>Almuerzo</th>
+          <th>Tiempo neto</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (dia of resultado.dias; track dia.fecha) {
+          <tr [class]="claseFila(dia)">
+            <td>{{ formatearFecha(dia.fecha) }}</td>
+            <td class="estado">{{ etiquetaEstado(dia) }}</td>
+            <td>{{ formatearHora(dia.llegada) }}</td>
+            <td>{{ formatearHora(dia.salida) }}</td>
+            <td>{{ dia.retrasoMinutos ? dia.retrasoMinutos + ' min' : '-' }}</td>
+            <td>
+              @if (dia.almuerzoDuracionMinutos) {
+                {{ dia.almuerzoDuracionMinutos }} min
+                @if (dia.almuerzoExcesoMinutos) {
+                  <span class="exceso">(+{{ dia.almuerzoExcesoMinutos }})</span>
+                }
+              } @else {
+                -
+              }
+            </td>
+            <td>{{ dia.tiempoNetoMinutos ? dia.tiempoNetoMinutos + ' min' : '-' }}</td>
+            <td>
+              @if (dia.observaciones.length) {
+                {{ dia.observaciones.join(' · ') }}
+              } @else {
+                -
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

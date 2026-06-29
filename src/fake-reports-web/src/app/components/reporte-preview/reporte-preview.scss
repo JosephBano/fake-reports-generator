@@ -1,0 +1,79 @@
+.preview {
+  font-size: 0.875rem;
+}
+
+.preview-header {
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    color: #1a3a5c;
+  }
+
+  .meta {
+    margin: 0.25rem 0 0;
+    color: #64748b;
+  }
+}
+
+h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+  color: #1a3a5c;
+}
+
+.resumen-table,
+.detalle-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    text-align: left;
+  }
+
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+  }
+}
+
+.resumen-table {
+  max-width: 400px;
+
+  td:first-child {
+    font-weight: 500;
+    color: #475569;
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+}
+
+.detalle-scroll {
+  overflow-x: auto;
+}
+
+.detalle-table {
+  min-width: 700px;
+
+  .estado {
+    font-weight: 600;
+  }
+
+  .exceso {
+    color: #dc2626;
+    font-weight: 600;
+  }
+}
+
+.estado-ok { background-color: #d4edda; }
+.estado-leve { background-color: #fff3cd; }
+.estado-severa { background-color: #f8d7da; }
+.estado-anomalo { background-color: #f8d7da; font-weight: 600; }
+.estado-ausente { background-color: #fee2e2; }
+.estado-feriado { background-color: #e0f2fe; }
+.estado-libre { background-color: #f3f4f6; }
+.estado-excluido { background-color: #f3f4f6; text-decoration: line-through; }

@@ -1,0 +1,151 @@
+name: 03-release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: "Force release run"
+        required: false
+        default: "false"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# Workflow-level default is read-only; release job escalates to write.
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Build + Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Validate tag format (release workflow)
+        run: |
+          set -euo pipefail
+          TAG="${{ github.ref_name }}"
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?$'; then
+            echo "::error::Refusing to release tag '$TAG'. Expected format: vX.Y.Z or vX.Y.Z-(alpha|beta|rc).N"
+            exit 1
+          fi
+          echo "Tag '$TAG' matches expected SemVer pattern."
+
+      - name: Checkout (full history for changelog)
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          # Angular 22 requiere Node >=22.22.3 || >=24.15.0 || >=26.0.0
+          node-version: "22"
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('src/**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache npm
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('src/fake-reports-web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Publish API artifacts
+        run: |
+          set -euo pipefail
+          dotnet publish src/FakeReports.Api/FakeReports.Api.csproj \
+            -c Release \
+            -o ${{ github.workspace }}/artifacts/api \
+            --self-contained false
+
+      - name: Build web artifacts
+        working-directory: src/fake-reports-web
+        run: |
+          set -euo pipefail
+          npm ci
+          npx ng build --configuration=production
+        env:
+          CI: "true"
+
+      - name: Package API binaries
+        working-directory: ${{ github.workspace }}/artifacts
+        run: zip -r api-binaries.zip api/
+
+      - name: Package web dist
+        working-directory: src/fake-reports-web/dist
+        run: zip -r web-dist.zip fake-reports-web/
+
+      - name: Resolve release version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            VERSION=${GITHUB_REF_NAME#v}
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          set -euo pipefail
+          FROM_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [ -z "$FROM_TAG" ]; then
+            RANGE="HEAD"
+            DIFF_LINK_MSG="Initial release."
+          else
+            RANGE="${FROM_TAG}..HEAD"
+            DIFF_LINK_MSG="Full diff: https://github.com/${{ github.repository }}/compare/${FROM_TAG}...${{ steps.version.outputs.version }}"
+          fi
+          CHANGELOG=$(mktemp)
+          {
+            echo "## Changes"
+            echo ""
+            echo "$DIFF_LINK_MSG"
+            echo ""
+            echo "### Commits since last release"
+            echo ""
+            git log ${RANGE} --pretty=format:'- %s (%h)' 2>/dev/null || echo "- Initial commit"
+          } > "$CHANGELOG"
+          {
+            echo "body<<EOF"
+            cat "$CHANGELOG"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          rm -f "$CHANGELOG"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@2bb465e97f322d3cb2a965294d483e0d26a67aa9 # v3.0.1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ steps.version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            ${{ github.workspace }}/artifacts/api-binaries.zip
+            src/fake-reports-web/dist/web-dist.zip
+          fail_on_unmatched_files: false

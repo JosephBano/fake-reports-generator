@@ -1,0 +1,118 @@
+# .NET / Visual Studio
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+*.publishproj
+*.azurePubxml
+*.nuget.props
+*.nuget.targets
+*.lock.json
+.vs/
+.vscode/
+*.user
+*.userprefs
+*.suo
+*.sln.docstates
+*.nupkg
+*.snupkg
+**/.idea/
+**/.vscode/
+
+# Test results / coverage
+[Tt]est[Rr]esult*/
+TestResults/
+coverage/
+coverage.*.xml
+*.coverage
+*.coveragexml
+.coverage/
+.coverage.xml
+.coverage.json
+
+# NuGet
+.packages/
+*.lock.json
+project.lock.json
+artifacts/
+
+# Node / Angular
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm/
+.eslintcache
+.stylelintcache
+.angular/cache/
+.angular/
+.parcel-cache/
+dist/
+.nx/cache/
+.vite/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editor temp files
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.rej
+.directory
+
+# Secrets and local config (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+secrets/
+config/local.json
+appsettings.*.local.json
+
+# IDE specific
+.idea/
+*.idea
+*.swb
+*.scssc
+
+# Misc
+*.tsbuildinfo
+.history/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/

@@ -1,0 +1,5 @@
+# CODEOWNERS
+# A single owner is currently assigned. Add more collaborators as the team grows.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-how-pull-requests-are-reviewed/about-code-owners
+
+* @joeman

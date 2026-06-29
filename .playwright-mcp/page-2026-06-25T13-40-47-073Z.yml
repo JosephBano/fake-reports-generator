@@ -1,0 +1,156 @@
+- main [ref=e4]:
+  - generic [ref=e5]:
+    - heading "Generador de reportes biométricos" [level=1] [ref=e6]
+    - paragraph [ref=e7]: Configura la persona, horario, asistencias y genera reportes falsos en PDF o Word.
+  - generic [ref=e8]:
+    - button "Exportar JSON" [ref=e9] [cursor=pointer]
+    - generic [ref=e10] [cursor=pointer]: Importar JSON
+  - generic [ref=e11]:
+    - heading "Persona" [level=2] [ref=e12]
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - text: Nombre
+        - textbox "Nombre" [ref=e15]
+      - generic [ref=e16]:
+        - text: Identificación
+        - textbox "Identificación" [ref=e17]
+  - generic [ref=e18]:
+    - heading "Período del reporte" [level=2] [ref=e19]
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - text: Desde
+        - textbox "Desde" [ref=e22]
+      - generic [ref=e23]:
+        - text: Hasta
+        - textbox "Hasta" [ref=e24]
+  - generic [ref=e25]:
+    - heading "Horario semanal" [level=2] [ref=e26]
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - text: Nombre del horario
+          - textbox "Nombre del horario" [ref=e30]
+        - generic [ref=e31]:
+          - text: Almuerzo (minutos)
+          - spinbutton "Almuerzo (minutos)" [ref=e32]
+      - table [ref=e33]:
+        - rowgroup [ref=e34]:
+          - row "Día Entrada Salida" [ref=e35]:
+            - columnheader "Día" [ref=e36]
+            - columnheader "Entrada" [ref=e37]
+            - columnheader "Salida" [ref=e38]
+        - rowgroup
+  - generic [ref=e39]:
+    - heading "Registros de asistencia" [level=2] [ref=e40]
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - text: Fecha
+        - textbox "Fecha" [ref=e43]
+      - generic [ref=e44]:
+        - text: Hora
+        - textbox "Hora" [ref=e45]
+      - generic [ref=e46]:
+        - text: Tipo
+        - combobox "Tipo" [ref=e47]:
+          - option "Entrada" [selected]
+          - option "Salida"
+      - button "Agregar" [ref=e48] [cursor=pointer]
+    - table [ref=e49]:
+      - rowgroup [ref=e50]:
+        - row "Fecha/hora Tipo" [ref=e51]:
+          - columnheader "Fecha/hora" [ref=e52]
+          - columnheader "Tipo" [ref=e53]
+          - columnheader [ref=e54]
+      - rowgroup
+  - generic [ref=e55]:
+    - heading "Días excluidos" [level=2] [ref=e56]
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - text: Fecha a excluir
+        - textbox "Fecha a excluir" [ref=e59]
+      - button "Excluir día" [ref=e60] [cursor=pointer]
+    - list
+  - generic [ref=e61]:
+    - heading "Justificaciones" [level=2] [ref=e62]
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - text: Fecha
+        - textbox "Fecha" [ref=e65]
+      - generic [ref=e66]:
+        - text: Tipo
+        - combobox "Tipo" [ref=e67]:
+          - option "Seleccionar" [selected]
+          - option "Tardanza"
+          - option "Ausencia"
+          - option "Permiso"
+          - option "Almuerzo"
+          - option "Salida anticipada"
+      - generic [ref=e68]:
+        - text: Descripción
+        - textbox "Descripción" [ref=e69]
+      - button "Agregar" [ref=e70] [cursor=pointer]
+    - list
+  - generic [ref=e71]:
+    - heading "Configuración del reporte" [level=2] [ref=e72]
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - text: Título
+          - textbox "Título" [ref=e76]
+        - generic [ref=e77]:
+          - text: Subtítulo
+          - textbox "Subtítulo" [ref=e78]
+        - generic [ref=e79]:
+          - text: Institución
+          - textbox "Institución" [ref=e80]
+        - generic [ref=e81]:
+          - text: Disclaimer
+          - textbox "Disclaimer" [ref=e82]
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - text: Color header
+          - textbox "Color header" [ref=e85]: "#000000"
+        - generic [ref=e86]:
+          - text: Color OK
+          - textbox "Color OK" [ref=e87]: "#000000"
+        - generic [ref=e88]:
+          - text: Color advertencia
+          - textbox "Color advertencia" [ref=e89]: "#000000"
+        - generic [ref=e90]:
+          - text: Color error
+          - textbox "Color error" [ref=e91]: "#000000"
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - text: Tardanza leve desde (min)
+          - spinbutton "Tardanza leve desde (min)" [ref=e94]
+        - generic [ref=e95]:
+          - text: Tardanza severa desde (min)
+          - spinbutton "Tardanza severa desde (min)" [ref=e96]
+        - generic [ref=e97]:
+          - text: Exceso almuerzo desde (min)
+          - spinbutton "Exceso almuerzo desde (min)" [ref=e98]
+      - group [ref=e99]:
+        - generic [ref=e100]:
+          - checkbox "Resumen" [ref=e101]
+          - text: Resumen
+        - generic [ref=e102]:
+          - checkbox "Tardanzas" [ref=e103]
+          - text: Tardanzas
+        - generic [ref=e104]:
+          - checkbox "Ausencias" [ref=e105]
+          - text: Ausencias
+        - generic [ref=e106]:
+          - checkbox "Excesos de almuerzo" [ref=e107]
+          - text: Excesos de almuerzo
+        - generic [ref=e108]:
+          - checkbox "Salidas anticipadas" [ref=e109]
+          - text: Salidas anticipadas
+        - generic [ref=e110]:
+          - checkbox "Registros anómalos" [ref=e111]
+          - text: Registros anómalos
+        - generic [ref=e112]:
+          - checkbox "Cumplimiento de horas" [ref=e113]
+          - text: Cumplimiento de horas
+  - generic [ref=e114]:
+    - button "Generar PDF" [ref=e115] [cursor=pointer]
+    - button "Generar Word" [ref=e116] [cursor=pointer]
