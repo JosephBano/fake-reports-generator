@@ -1,6 +1,6 @@
 export interface HorarioDia {
   entrada?: string; // HH:MM
-  salida?: string;  // HH:MM
+  salida?: string; // HH:MM
 }
 
 export interface HorarioSemanal {

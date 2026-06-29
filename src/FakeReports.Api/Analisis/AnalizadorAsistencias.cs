@@ -159,13 +159,23 @@ public static class AnalizadorAsistencias
         return dia;
     }
 
+    // Zona fija para República Argentina (UTC-3, sin horario de verano desde 2009).
+    // Se usa CreateCustomTimeZone en vez de FindSystemTimeZoneById para no
+    // depender del paquete tzdata del runner de CI.
+    private static readonly TimeZoneInfo ArgentinaTimeZone =
+        TimeZoneInfo.CreateCustomTimeZone(
+            "Argentina UTC-3",
+            TimeSpan.FromHours(-3),
+            "Argentina (UTC-3)",
+            "Argentina Standard Time (UTC-3, no DST since 2009)");
+
     private static void NormalizarZonasHorarias(ReporteRequest request)
     {
         foreach (var r in request.Registros)
         {
             r.FechaHora = r.FechaHora.Kind switch
             {
-                DateTimeKind.Utc => r.FechaHora.ToLocalTime(),
+                DateTimeKind.Utc => TimeZoneInfo.ConvertTime(r.FechaHora, TimeZoneInfo.Utc, ArgentinaTimeZone),
                 DateTimeKind.Unspecified => DateTime.SpecifyKind(r.FechaHora, DateTimeKind.Local),
                 _ => r.FechaHora
             };

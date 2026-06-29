@@ -43,8 +43,8 @@ related: ["0002-ci-pipelines.md", "0003-cicd-runbook.md"]
 - **Items**:
   1. CODEOWNERS con escape hatch (segundo owner o equipo `@istpet-dev/backend`).
   2. CODEOWNERS con separación de duties para `.github/**`.
-  3. Dependabot `groups:` para agrupar minor/patch en PRs únicas.
-  4. Auto-merge de PRs de Dependabot condicional a CI verde (después de activar branch protection).
+  3. ~~Dependabot `groups:` para agrupar minor/patch en PRs únicas.~~ ✅ Cerrado: Dependabot ya las agrupa nativamente.
+  4. Auto-merge de PRs de Dependabot condicional a CI verde (después de activar branch protection) — pendiente de activar "Allow auto-merge" en Settings.
   5. Eliminar `npm ci` redundante en `02-ci-web.yml` consolidando audit dentro del job `test`.
   6. Considerar `set -euo pipefail` en steps de shell ya presente (✓ aplicado) — auditar más steps.
   7. Sanitizar subject de commit en changelog (`printf` puede romper con caracteres especiales).
@@ -70,6 +70,31 @@ related: ["0002-ci-pipelines.md", "0003-cicd-runbook.md"]
   2. Si Dependabot no las levanta, bumpear manualmente las dependencias o aceptar el riesgo con un ADR.
 - **Estimación**: S (1h) si Dependabot ya las levantó; M (4h) si hay que bumpear manualmente.
 - **Bloquea**: nada crítico inmediato (es una herramienta local de PDFs, no servidor público).
+
+### 8. Prettier `style: apply prettier` (no se había aplicado nunca) ✅ CERRADO 2026-06-29
+- **Contexto**: el repo nunca había sido formateado con Prettier. Al activar el gate `prettier --check` en CI, 19 archivos generaron errores.
+- **Trabajo hecho**: aplicado `npx prettier --write "src/**/*.{ts,html,scss,json}"` en un commit posterior. Diff: 19 archivos modificados (solo whitespace y reformateo).
+- **Verificación**: Prettier local pasa. CI debería pasar el job `Lint (Prettier)` en el próximo run.
+
+### 9. Angular 22 + Vitest 4 — flag `--code-coverage` removido ✅ CERRADO 2026-06-29
+- **Contexto**: el CLI `ng test` de Angular 22 con builder `@angular/build:unit-test` no acepta el flag `--code-coverage`. La cobertura se configura en `angular.json` → `target.test.options.coverage: true`.
+- **Trabajo hecho**:
+  - Configurado `coverage: true` en `angular.json` test target con reporters `[lcov, text-summary]`.
+  - Agregada dep `@vitest/coverage-v8@^4.0.0` como devDep (Vitest 4 la requiere explícitamente).
+  - Removido `--code-coverage` del comando `npx ng test` en `02-ci-web.yml`.
+  - Corregido path del artefacto de cobertura (`coverage/fake-reports-web/lcov.info` con subdirectorio).
+- **Verificado**: `npx ng test --watch=false` genera `lcov.info` y muestra `Coverage summary` en consola. 36/36 tests verdes.
+- **Nota**: la cobertura actual del frontend es ~25% lines. El gate duro del 60% queda como decisión pendiente (no activé script para leerla en el workflow porque faltaba el flag).
+
+### 10. Test .NET rojo: `Normaliza_Registros_Utc_A_Local` (dependía de TZ ambiental) ✅ CERRADO 2026-06-29
+- **Contexto**: el test asumía que `NormalizarZonasHorarias` convierte UTC → hora local de Argentina (UTC-3). Pero el código usaba `ToLocalTime()` que depende de la TZ del proceso, no del dominio. En runner Ubuntu UTC, el test fallaba porque `ToLocalTime` era no-op.
+- **Causa raíz**: implementación ambiental-dependiente, no contrato de negocio.
+- **Trabajo hecho**:
+  - `AnalizadorAsistencias.NormalizarZonasHorarias` ahora usa `TimeZoneInfo.CreateCustomTimeZone("Argentina UTC-3", TimeSpan.FromHours(-3), ...)` con offset fijo.
+  - Se eligió `CreateCustomTimeZone` sobre `FindSystemTimeZoneById("America/Argentina/Buenos_Aires")` porque no depende de que el paquete `tzdata` esté instalado en el runner.
+  - Comentario inline documenta por qué se toma esta decisión.
+  - `dotnet format` aplicado al archivo modificado (sigue cumpliendo el strict gate).
+- **Verificado**: `dotnet test` → 48/48 verde localmente. Los 23 tests que ya pasaban (rama `Unspecified`) siguen pasando porque no se tocaron.
 
 ## Referencias
 - [[0002-ci-pipelines]] — pipeline CI actual al que se suma esta deuda

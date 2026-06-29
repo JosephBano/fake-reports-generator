@@ -7,7 +7,7 @@ import { DiaAnalizado, ResultadoAnalisis } from '../../models/reporte.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './reporte-preview.html',
-  styleUrl: './reporte-preview.scss'
+  styleUrl: './reporte-preview.scss',
 })
 export class ReportePreview {
   @Input({ required: true }) resultado!: ResultadoAnalisis;
@@ -23,15 +23,24 @@ export class ReportePreview {
 
   claseFila(dia: DiaAnalizado): string {
     switch (dia.estado) {
-      case 'ok': return 'estado-ok';
-      case 'leve': return 'estado-leve';
-      case 'severa': return 'estado-severa';
-      case 'anomalo': return 'estado-anomalo';
-      case 'ausente': return 'estado-ausente';
-      case 'feriado': return 'estado-feriado';
-      case 'libre': return 'estado-libre';
-      case 'excluido': return 'estado-excluido';
-      default: return '';
+      case 'ok':
+        return 'estado-ok';
+      case 'leve':
+        return 'estado-leve';
+      case 'severa':
+        return 'estado-severa';
+      case 'anomalo':
+        return 'estado-anomalo';
+      case 'ausente':
+        return 'estado-ausente';
+      case 'feriado':
+        return 'estado-feriado';
+      case 'libre':
+        return 'estado-libre';
+      case 'excluido':
+        return 'estado-excluido';
+      default:
+        return '';
     }
   }
 
@@ -44,7 +53,7 @@ export class ReportePreview {
       ausente: 'Ausente',
       feriado: 'Feriado',
       libre: 'Día libre',
-      excluido: 'Excluido'
+      excluido: 'Excluido',
     };
     return map[dia.estado] ?? dia.estado;
   }

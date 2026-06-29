@@ -1,7 +1,9 @@
 <main class="container">
   <header>
     <h1>Generador de reportes biométricos</h1>
-    <p class="subtitle">Configura la persona, horario, asistencias y genera reportes falsos en PDF o Word.</p>
+    <p class="subtitle">
+      Configura la persona, horario, asistencias y genera reportes falsos en PDF o Word.
+    </p>
   </header>
 
   <div class="toolbar">
@@ -267,10 +269,22 @@
         <label><input type="checkbox" formControlName="incluirResumen" /> Resumen</label>
         <label><input type="checkbox" formControlName="incluirTardanzas" /> Tardanzas</label>
         <label><input type="checkbox" formControlName="incluirAusencias" /> Ausencias</label>
-        <label><input type="checkbox" formControlName="incluirExcesosAlmuerzo" /> Excesos de almuerzo</label>
-        <label><input type="checkbox" formControlName="incluirSalidasAnticipadas" /> Salidas anticipadas</label>
-        <label><input type="checkbox" formControlName="incluirRegistrosAnomalos" /> Registros anómalos</label>
-        <label><input type="checkbox" formControlName="incluirCumplimientoHoras" /> Cumplimiento de horas</label>
+        <label
+          ><input type="checkbox" formControlName="incluirExcesosAlmuerzo" /> Excesos de
+          almuerzo</label
+        >
+        <label
+          ><input type="checkbox" formControlName="incluirSalidasAnticipadas" /> Salidas
+          anticipadas</label
+        >
+        <label
+          ><input type="checkbox" formControlName="incluirRegistrosAnomalos" /> Registros
+          anómalos</label
+        >
+        <label
+          ><input type="checkbox" formControlName="incluirCumplimientoHoras" /> Cumplimiento de
+          horas</label
+        >
       </fieldset>
     </form>
   </section>
@@ -290,7 +304,9 @@
     @if (previewResultado()) {
       <app-reporte-preview [resultado]="previewResultado()!" />
     } @else {
-      <p class="empty-preview">Presioná "Actualizar vista previa" para ver el análisis del reporte.</p>
+      <p class="empty-preview">
+        Presioná "Actualizar vista previa" para ver el análisis del reporte.
+      </p>
     }
   </section>
 

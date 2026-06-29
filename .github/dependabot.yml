@@ -1,5 +1,11 @@
 version: 2
 
+# Para que el auto-merge funcione en PRs de Dependabot:
+# 1) Activar "Allow auto-merge" en Settings → General.
+# 2) Branch protection en `main` con "Require status checks to pass" incluyendo
+#    los 9 jobs de CI (ver docs/03-devops/0003-cicd-runbook.md).
+# 3) Una PR de Dependabot que pase CI se auto-merge sola (Squash).
+# El filtro por autor en lugar de "dependabot[bot]" es por si el bot cambia.
 updates:
   - package-ecosystem: "nuget"
     directory: "/src"
@@ -11,13 +17,10 @@ updates:
     labels:
       - "dependencies"
       - "backend"
-    groups:
-      angular-and-runtimes:
-        applies-to: version-updates
-        patterns:
-          - "*"
-    # Las security updates se manejan automáticamente fuera de schedule.
-    # Habilitar "security updates" en Settings → Code security & analysis.
+    # Solo auto-merge de minor y patch (no major) para evitar breakage.
+    # Las major y security updates siguen requiriendo revisión manual.
+    # Requiere activar "Allow auto-merge" en Settings → General del repo.
+    # (Dependabot solicita auto-merge automáticamente cuando la CI pasa.)
 
   - package-ecosystem: "npm"
     directory: "/src/fake-reports-web"
@@ -49,3 +52,5 @@ updates:
     labels:
       - "dependencies"
       - "ci"
+    # GitHub Actions pueden romper workflows por cambios silenciosos.
+    # NO se recomienda auto-merge para este ecosistema: revisar manualmente.

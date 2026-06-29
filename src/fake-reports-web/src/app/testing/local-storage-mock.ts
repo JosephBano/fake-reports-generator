@@ -18,11 +18,19 @@ export function crearLocalStorageMock(): LocalStorageMock {
   const store = new Map<string, string>();
   return {
     getItem: (k) => store.get(k) ?? null,
-    setItem: (k, v) => { store.set(k, v); },
-    removeItem: (k) => { store.delete(k); },
-    clear: () => { store.clear(); },
+    setItem: (k, v) => {
+      store.set(k, v);
+    },
+    removeItem: (k) => {
+      store.delete(k);
+    },
+    clear: () => {
+      store.clear();
+    },
     key: (i) => Array.from(store.keys())[i] ?? null,
-    get length() { return store.size; }
+    get length() {
+      return store.size;
+    },
   };
 }
 

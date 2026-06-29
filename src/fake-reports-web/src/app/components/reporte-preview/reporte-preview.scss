@@ -27,7 +27,8 @@ h4 {
   width: 100%;
   border-collapse: collapse;
 
-  th, td {
+  th,
+  td {
     border: 1px solid #e2e8f0;
     padding: 0.5rem;
     text-align: left;
@@ -69,11 +70,29 @@ h4 {
   }
 }
 
-.estado-ok { background-color: #d4edda; }
-.estado-leve { background-color: #fff3cd; }
-.estado-severa { background-color: #f8d7da; }
-.estado-anomalo { background-color: #f8d7da; font-weight: 600; }
-.estado-ausente { background-color: #fee2e2; }
-.estado-feriado { background-color: #e0f2fe; }
-.estado-libre { background-color: #f3f4f6; }
-.estado-excluido { background-color: #f3f4f6; text-decoration: line-through; }
+.estado-ok {
+  background-color: #d4edda;
+}
+.estado-leve {
+  background-color: #fff3cd;
+}
+.estado-severa {
+  background-color: #f8d7da;
+}
+.estado-anomalo {
+  background-color: #f8d7da;
+  font-weight: 600;
+}
+.estado-ausente {
+  background-color: #fee2e2;
+}
+.estado-feriado {
+  background-color: #e0f2fe;
+}
+.estado-libre {
+  background-color: #f3f4f6;
+}
+.estado-excluido {
+  background-color: #f3f4f6;
+  text-decoration: line-through;
+}

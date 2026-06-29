@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AppState, ConfiguracionReporte, HorarioSemanal, Persona, RegistroAsistencia, Justificacion } from '../models/reporte.model';
+import {
+  AppState,
+  ConfiguracionReporte,
+  HorarioSemanal,
+  Persona,
+  RegistroAsistencia,
+  Justificacion,
+} from '../models/reporte.model';
 
 const STORAGE_KEY = 'fakeReportsState';
 
@@ -21,7 +28,7 @@ const defaultConfig: ConfiguracionReporte = {
   incluirExcesosAlmuerzo: true,
   incluirSalidasAnticipadas: true,
   incluirRegistrosAnomalos: true,
-  incluirCumplimientoHoras: true
+  incluirCumplimientoHoras: true,
 };
 
 const defaultHorario = (nombre: string): HorarioSemanal => ({
@@ -34,7 +41,7 @@ const defaultHorario = (nombre: string): HorarioSemanal => ({
   viernes: { entrada: '08:00', salida: '17:00' },
   sabado: {},
   domingo: {},
-  almuerzoMinutos: 60
+  almuerzoMinutos: 60,
 });
 
 const defaultState = (): AppState => ({
@@ -45,7 +52,7 @@ const defaultState = (): AppState => ({
   diasExcluidos: [],
   justificaciones: [],
   fechaDesde: new Date().toISOString().slice(0, 10),
-  fechaHasta: new Date().toISOString().slice(0, 10)
+  fechaHasta: new Date().toISOString().slice(0, 10),
 });
 
 @Injectable({ providedIn: 'root' })

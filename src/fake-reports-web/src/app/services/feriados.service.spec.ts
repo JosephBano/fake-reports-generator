@@ -10,10 +10,7 @@ describe('FeriadosService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(FeriadosService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -31,10 +28,10 @@ describe('FeriadosService', () => {
     it('hace GET a /api/feriados', () => {
       const mockFeriados: Feriado[] = [
         { fecha: '2026-01-01', descripcion: 'Año Nuevo' },
-        { fecha: '2026-05-01', descripcion: 'Trabajo' }
+        { fecha: '2026-05-01', descripcion: 'Trabajo' },
       ];
 
-      service.obtener().subscribe(f => {
+      service.obtener().subscribe((f) => {
         expect(f).toEqual(mockFeriados);
       });
 
@@ -47,8 +44,10 @@ describe('FeriadosService', () => {
       let errorCapturado: unknown;
 
       service.obtener().subscribe({
-        next: () => { /* no debería llamarse */ },
-        error: e => errorCapturado = e
+        next: () => {
+          /* no debería llamarse */
+        },
+        error: (e) => (errorCapturado = e),
       });
 
       const req = httpMock.expectOne('http://localhost:5158/api/feriados');
@@ -60,11 +59,9 @@ describe('FeriadosService', () => {
 
   describe('guardar', () => {
     it('hace PUT a /api/feriados con la lista', () => {
-      const feriados: Feriado[] = [
-        { fecha: '2026-12-25', descripcion: 'Navidad' }
-      ];
+      const feriados: Feriado[] = [{ fecha: '2026-12-25', descripcion: 'Navidad' }];
 
-      service.guardar(feriados).subscribe(f => {
+      service.guardar(feriados).subscribe((f) => {
         expect(f).toEqual(feriados);
       });
 
@@ -75,7 +72,7 @@ describe('FeriadosService', () => {
     });
 
     it('PUT con lista vacía', () => {
-      service.guardar([]).subscribe(f => {
+      service.guardar([]).subscribe((f) => {
         expect(f).toEqual([]);
       });
 
@@ -89,8 +86,10 @@ describe('FeriadosService', () => {
       let errorCapturado: unknown;
 
       service.guardar([]).subscribe({
-        next: () => { /* no debería llamarse */ },
-        error: e => errorCapturado = e
+        next: () => {
+          /* no debería llamarse */
+        },
+        error: (e) => (errorCapturado = e),
       });
 
       const req = httpMock.expectOne('http://localhost:5158/api/feriados');

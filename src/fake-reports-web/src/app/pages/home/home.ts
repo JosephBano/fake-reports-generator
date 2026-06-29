@@ -1,4 +1,12 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -8,17 +16,33 @@ import { FeriadosService } from '../../services/feriados.service';
 import { ReportesApiService } from '../../services/reportes-api.service';
 import { ExportImportService } from '../../services/export-import.service';
 import { ReportePreview } from '../../components/reporte-preview/reporte-preview';
-import { AppState, ConfiguracionReporte, Feriado, HorarioSemanal, RegistroAsistencia, ReporteRequest, ResultadoAnalisis } from '../../models/reporte.model';
+import {
+  AppState,
+  ConfiguracionReporte,
+  Feriado,
+  HorarioSemanal,
+  RegistroAsistencia,
+  ReporteRequest,
+  ResultadoAnalisis,
+} from '../../models/reporte.model';
 
-const DIAS_SEMANA = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'] as const;
-type DiaSemana = typeof DIAS_SEMANA[number];
+const DIAS_SEMANA = [
+  'lunes',
+  'martes',
+  'miercoles',
+  'jueves',
+  'viernes',
+  'sabado',
+  'domingo',
+] as const;
+type DiaSemana = (typeof DIAS_SEMANA)[number];
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ReportePreview],
   templateUrl: './home.html',
-  styleUrl: './home.scss'
+  styleUrl: './home.scss',
 })
 export class Home implements OnInit {
   protected readonly diasSemana = DIAS_SEMANA;
@@ -37,7 +61,7 @@ export class Home implements OnInit {
   protected cargandoPreview = signal<boolean>(false);
   protected previewRequest = computed(() => ({
     state: this.state(),
-    feriados: this.feriadosLista
+    feriados: this.feriadosLista,
   }));
   private destroyRef = inject(DestroyRef);
 
@@ -46,7 +70,7 @@ export class Home implements OnInit {
     private storage: StorageService,
     private feriadosService: FeriadosService,
     private reportesApi: ReportesApiService,
-    private exportImport: ExportImportService
+    private exportImport: ExportImportService,
   ) {
     this.state = signal(this.storage.load());
   }
@@ -62,32 +86,37 @@ export class Home implements OnInit {
 
     this.personaForm = this.fb.group({
       nombre: [s.persona.nombre, Validators.required],
-      identificacion: [s.persona.identificacion, Validators.required]
+      identificacion: [s.persona.identificacion, Validators.required],
     });
 
     this.horarioForm = this.fb.group({
       nombre: [s.horario.nombre],
       almuerzoMinutos: [s.horario.almuerzoMinutos],
-      ...Object.fromEntries(DIAS_SEMANA.map(d => [d, this.fb.group({
-        entrada: [s.horario[d].entrada || ''],
-        salida: [s.horario[d].salida || '']
-      })]))
+      ...Object.fromEntries(
+        DIAS_SEMANA.map((d) => [
+          d,
+          this.fb.group({
+            entrada: [s.horario[d].entrada || ''],
+            salida: [s.horario[d].salida || ''],
+          }),
+        ]),
+      ),
     });
 
     this.registroForm = this.fb.group({
       fecha: ['', Validators.required],
       hora: ['', Validators.required],
-      tipo: ['entrada', Validators.required]
+      tipo: ['entrada', Validators.required],
     });
 
     this.excluirForm = this.fb.group({
-      fecha: ['', Validators.required]
+      fecha: ['', Validators.required],
     });
 
     this.justificacionForm = this.fb.group({
       fecha: ['', Validators.required],
       tipo: ['', Validators.required],
-      descripcion: ['', Validators.required]
+      descripcion: ['', Validators.required],
     });
 
     this.configForm = this.fb.group({
@@ -108,17 +137,17 @@ export class Home implements OnInit {
       incluirExcesosAlmuerzo: [s.configuracion.incluirExcesosAlmuerzo],
       incluirSalidasAnticipadas: [s.configuracion.incluirSalidasAnticipadas],
       incluirRegistrosAnomalos: [s.configuracion.incluirRegistrosAnomalos],
-      incluirCumplimientoHoras: [s.configuracion.incluirCumplimientoHoras]
+      incluirCumplimientoHoras: [s.configuracion.incluirCumplimientoHoras],
     });
 
     this.rangoForm = this.fb.group({
       fechaDesde: [s.fechaDesde],
-      fechaHasta: [s.fechaHasta]
+      fechaHasta: [s.fechaHasta],
     });
 
     this.feriadoForm = this.fb.group({
       fecha: ['', Validators.required],
-      descripcion: ['', Validators.required]
+      descripcion: ['', Validators.required],
     });
   }
 
@@ -135,7 +164,7 @@ export class Home implements OnInit {
         jueves: horario.jueves,
         viernes: horario.viernes,
         sabado: horario.sabado,
-        domingo: horario.domingo
+        domingo: horario.domingo,
       };
 
       const nuevo: AppState = {
@@ -146,39 +175,42 @@ export class Home implements OnInit {
         diasExcluidos: this.state().diasExcluidos,
         justificaciones: this.state().justificaciones,
         fechaDesde: this.rangoForm.value.fechaDesde,
-        fechaHasta: this.rangoForm.value.fechaHasta
+        fechaHasta: this.rangoForm.value.fechaHasta,
       };
       this.state.set(nuevo);
       this.storage.save(nuevo);
     };
 
-    [this.personaForm, this.horarioForm, this.configForm, this.rangoForm].forEach(f =>
-      f.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(guardar)
+    [this.personaForm, this.horarioForm, this.configForm, this.rangoForm].forEach((f) =>
+      f.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(guardar),
     );
 
     toObservable(this.previewRequest)
       .pipe(
         debounceTime(800),
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => this.actualizarVistaPrevia());
   }
 
   private cargarFeriados(): void {
     this.feriadosService.obtener().subscribe({
-      next: f => this.feriadosLista = f.map(x => ({
-        fecha: x.fecha.slice(0, 10),
-        descripcion: x.descripcion
-      })).sort((a, b) => a.fecha.localeCompare(b.fecha)),
-      error: () => this.feriadosLista = []
+      next: (f) =>
+        (this.feriadosLista = f
+          .map((x) => ({
+            fecha: x.fecha.slice(0, 10),
+            descripcion: x.descripcion,
+          }))
+          .sort((a, b) => a.fecha.localeCompare(b.fecha))),
+      error: () => (this.feriadosLista = []),
     });
   }
 
   protected agregarFeriado(): void {
     if (this.feriadoForm.invalid) return;
     const v = this.feriadoForm.value;
-    if (this.feriadosLista.some(f => f.fecha === v.fecha)) {
+    if (this.feriadosLista.some((f) => f.fecha === v.fecha)) {
       this.mensaje.set('Ya existe un feriado en esa fecha.');
       return;
     }
@@ -193,14 +225,16 @@ export class Home implements OnInit {
 
   protected guardarFeriados(): void {
     this.feriadosService.guardar(this.feriadosLista).subscribe({
-      next: f => {
-        this.feriadosLista = f.map(x => ({
-          fecha: x.fecha.slice(0, 10),
-          descripcion: x.descripcion
-        })).sort((a, b) => a.fecha.localeCompare(b.fecha));
+      next: (f) => {
+        this.feriadosLista = f
+          .map((x) => ({
+            fecha: x.fecha.slice(0, 10),
+            descripcion: x.descripcion,
+          }))
+          .sort((a, b) => a.fecha.localeCompare(b.fecha));
         this.mensaje.set('Feriados guardados correctamente.');
       },
-      error: () => this.mensaje.set('Error al guardar feriados. ¿El backend está corriendo?')
+      error: () => this.mensaje.set('Error al guardar feriados. ¿El backend está corriendo?'),
     });
   }
 
@@ -208,7 +242,10 @@ export class Home implements OnInit {
     if (this.registroForm.invalid) return;
     const v = this.registroForm.value;
     const fechaHora = `${v.fecha}T${v.hora}`;
-    const registros = [...this.state().registros, { fechaHora, tipo: v.tipo } as RegistroAsistencia];
+    const registros = [
+      ...this.state().registros,
+      { fechaHora, tipo: v.tipo } as RegistroAsistencia,
+    ];
     this.actualizarRegistros(registros);
     this.registroForm.reset({ tipo: 'entrada' });
   }
@@ -236,7 +273,10 @@ export class Home implements OnInit {
   }
 
   protected incluirDia(fecha: string): void {
-    const nuevo = { ...this.state(), diasExcluidos: this.state().diasExcluidos.filter(d => d !== fecha) };
+    const nuevo = {
+      ...this.state(),
+      diasExcluidos: this.state().diasExcluidos.filter((d) => d !== fecha),
+    };
     this.state.set(nuevo);
     this.storage.save(nuevo);
   }
@@ -251,19 +291,26 @@ export class Home implements OnInit {
   }
 
   protected eliminarJustificacion(index: number): void {
-    const nuevo = { ...this.state(), justificaciones: this.state().justificaciones.filter((_, i) => i !== index) };
+    const nuevo = {
+      ...this.state(),
+      justificaciones: this.state().justificaciones.filter((_, i) => i !== index),
+    };
     this.state.set(nuevo);
     this.storage.save(nuevo);
   }
 
   protected generar(tipo: 'pdf' | 'word'): void {
     const request = this.construirRequest();
-    const obs = tipo === 'pdf' ? this.reportesApi.generarPdf(request) : this.reportesApi.generarWord(request);
-    const mime = tipo === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const obs =
+      tipo === 'pdf' ? this.reportesApi.generarPdf(request) : this.reportesApi.generarWord(request);
+    const mime =
+      tipo === 'pdf'
+        ? 'application/pdf'
+        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     const extension = tipo === 'pdf' ? 'pdf' : 'docx';
 
     obs.subscribe({
-      next: blob => {
+      next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -272,10 +319,10 @@ export class Home implements OnInit {
         URL.revokeObjectURL(url);
         this.mensaje.set(`Reporte ${extension.toUpperCase()} generado correctamente.`);
       },
-      error: err => {
+      error: (err) => {
         console.error(err);
         this.mensaje.set(`Error al generar ${tipo}. ¿El backend está corriendo?`);
-      }
+      },
     });
   }
 
@@ -286,25 +333,25 @@ export class Home implements OnInit {
       horario: s.horario,
       registros: s.registros,
       configuracion: s.configuracion,
-      feriados: this.feriadosLista.map(f => f.fecha),
+      feriados: this.feriadosLista.map((f) => f.fecha),
       diasExcluidos: s.diasExcluidos,
       justificaciones: s.justificaciones,
       fechaDesde: s.fechaDesde,
-      fechaHasta: s.fechaHasta
+      fechaHasta: s.fechaHasta,
     };
   }
 
   protected actualizarVistaPrevia(): void {
     this.cargandoPreview.set(true);
     this.reportesApi.preview(this.construirRequest()).subscribe({
-      next: analisis => {
+      next: (analisis) => {
         this.previewResultado.set(analisis);
         this.cargandoPreview.set(false);
       },
-      error: err => {
+      error: (err) => {
         console.error(err);
         this.cargandoPreview.set(false);
-      }
+      },
     });
   }
 
@@ -315,14 +362,17 @@ export class Home implements OnInit {
   protected importar(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-    this.exportImport.importar(input.files[0]).then(state => {
-      this.state.set(state);
-      this.storage.save(state);
-      this.crearFormularios();
-      this.mensaje.set('Configuración importada correctamente.');
-    }).catch(() => {
-      this.mensaje.set('Error al importar el archivo JSON.');
-    });
+    this.exportImport
+      .importar(input.files[0])
+      .then((state) => {
+        this.state.set(state);
+        this.storage.save(state);
+        this.crearFormularios();
+        this.mensaje.set('Configuración importada correctamente.');
+      })
+      .catch(() => {
+        this.mensaje.set('Error al importar el archivo JSON.');
+      });
   }
 
   protected formatearRegistro(fechaHora: string): string {

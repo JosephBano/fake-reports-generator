@@ -6,13 +6,19 @@ function crearResultadoBase(): ResultadoAnalisis {
   return {
     persona: { id: 'p1', nombre: 'Juan Pérez', identificacion: '12345678' },
     resumen: {
-      totalDias: 22, ausencias: 1, tardanzasSeveras: 2, tardanzasLeves: 3,
-      excesosAlmuerzo: 1, salidasAnticipadas: 0, registrosAnomalos: 0, justificaciones: 0
+      totalDias: 22,
+      ausencias: 1,
+      tardanzasSeveras: 2,
+      tardanzasLeves: 3,
+      excesosAlmuerzo: 1,
+      salidasAnticipadas: 0,
+      registrosAnomalos: 0,
+      justificaciones: 0,
     },
     dias: [],
     configuracion: {} as ResultadoAnalisis['configuracion'],
     fechaDesde: '2026-06-01',
-    fechaHasta: '2026-06-30'
+    fechaHasta: '2026-06-30',
   };
 }
 
@@ -20,16 +26,24 @@ function crearDia(estado: string, overrides: Partial<DiaAnalizado> = {}): DiaAna
   return {
     fecha: '2026-06-01',
     estado,
-    llegada: null, salida: null,
-    horaProgramadaEntrada: null, horaProgramadaSalida: null,
+    llegada: null,
+    salida: null,
+    horaProgramadaEntrada: null,
+    horaProgramadaSalida: null,
     retrasoMinutos: 0,
-    almuerzoSalida: null, almuerzoRegreso: null,
-    almuerzoDuracionMinutos: 0, almuerzoExcesoMinutos: 0,
-    salidaAnticipadaMinutos: 0, tiempoNetoMinutos: 0,
-    observaciones: [], registros: [],
-    esFeriado: false, esDiaLibre: false, esDiaExcluido: false,
+    almuerzoSalida: null,
+    almuerzoRegreso: null,
+    almuerzoDuracionMinutos: 0,
+    almuerzoExcesoMinutos: 0,
+    salidaAnticipadaMinutos: 0,
+    tiempoNetoMinutos: 0,
+    observaciones: [],
+    registros: [],
+    esFeriado: false,
+    esDiaLibre: false,
+    esDiaExcluido: false,
     justificacion: null,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -39,7 +53,7 @@ describe('ReportePreview', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReportePreview]
+      imports: [ReportePreview],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportePreview);
@@ -52,7 +66,7 @@ describe('ReportePreview', () => {
       crearDia('ausente'),
       crearDia('feriado'),
       crearDia('libre'),
-      crearDia('excluido')
+      crearDia('excluido'),
     ];
     fixture.componentRef.setInput('resultado', resultado);
     component = fixture.componentInstance;
@@ -74,9 +88,9 @@ describe('ReportePreview', () => {
     const html: HTMLElement = fixture.nativeElement;
     const resumen = html.querySelector('.resumen-table')?.textContent ?? '';
     expect(resumen).toContain('22'); // totalDias
-    expect(resumen).toContain('1');  // ausencias
-    expect(resumen).toContain('2');  // tardanzas severas
-    expect(resumen).toContain('3');  // tardanzas leves
+    expect(resumen).toContain('1'); // ausencias
+    expect(resumen).toContain('2'); // tardanzas severas
+    expect(resumen).toContain('3'); // tardanzas leves
   });
 
   it('renderiza una fila por cada día del análisis', () => {
@@ -166,8 +180,8 @@ describe('ReportePreview', () => {
     r.dias = [
       crearDia('ok', {
         almuerzoDuracionMinutos: 75,
-        almuerzoExcesoMinutos: 15
-      })
+        almuerzoExcesoMinutos: 15,
+      }),
     ];
     fixture.componentRef.setInput('resultado', r);
     fixture.detectChanges();
@@ -197,8 +211,8 @@ describe('ReportePreview', () => {
     r.dias = [
       crearDia('leve', {
         retrasoMinutos: 5,
-        observaciones: ['Tardanza de 5 minutos', 'Tránsito']
-      })
+        observaciones: ['Tardanza de 5 minutos', 'Tránsito'],
+      }),
     ];
     fixture.componentRef.setInput('resultado', r);
     fixture.detectChanges();

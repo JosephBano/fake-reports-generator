@@ -39,7 +39,7 @@ describe('StorageService', () => {
 
     it('fusiona el estado guardado con el default (no rompe si faltan claves)', () => {
       const parcial: Partial<AppState> = {
-        persona: { id: 'X', nombre: 'Ana', identificacion: '999' }
+        persona: { id: 'X', nombre: 'Ana', identificacion: '999' },
       };
       localStorage.setItem('fakeReportsState', JSON.stringify(parcial));
 
@@ -71,22 +71,28 @@ describe('StorageService', () => {
         incluirExcesosAlmuerzo: true,
         incluirSalidasAnticipadas: false,
         incluirRegistrosAnomalos: true,
-        incluirCumplimientoHoras: false
+        incluirCumplimientoHoras: false,
       };
       const custom: AppState = {
         persona: { id: 'P1', nombre: 'María', identificacion: '555' },
         horario: {
-          id: 'H1', nombre: 'Rotativo',
+          id: 'H1',
+          nombre: 'Rotativo',
           lunes: { entrada: '09:00', salida: '18:00' },
-          martes: {}, miercoles: {}, jueves: {}, viernes: {}, sabado: {}, domingo: {},
-          almuerzoMinutos: 45
+          martes: {},
+          miercoles: {},
+          jueves: {},
+          viernes: {},
+          sabado: {},
+          domingo: {},
+          almuerzoMinutos: 45,
         },
         registros: [{ fechaHora: '2026-06-01T08:00', tipo: 'entrada' }],
         configuracion: config,
         diasExcluidos: ['2026-06-02'],
         justificaciones: [{ fecha: '2026-06-01', tipo: 'vacaciones', descripcion: 'Personal' }],
         fechaDesde: '2026-06-01',
-        fechaHasta: '2026-06-30'
+        fechaHasta: '2026-06-30',
       };
 
       service.save(custom);
